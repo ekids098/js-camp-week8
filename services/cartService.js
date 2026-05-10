@@ -26,25 +26,14 @@ async function addProductToCart(productId, quantity) {
   // 提示：先用 utils validateCartQuantity() 驗證數量，驗證失敗時回傳 { success: false, error: ... }
   // 驗證通過後，呼叫 addToCart() 加入購物車
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
-  // 1. 驗證數量
   const v = validateCartQuantity(quantity);
-  if (!v.isValid) return { success: false, error: v.error };
+  if (!v.isValid) return {success: false, error: v.error};
 
   try {
-    // 2. 呼叫 API
     const data = await addToCart(productId, quantity);
-
-    // 3. 檢查 API 業務邏輯是否成功 (例如庫存不足也會回傳 status: false)
-    if (!data.status) {
-      return { success: false, error: data.message || '加入失敗' };
-    }
-
-    // 4. 全部成功
-    return { success: true, data };
-    
-  } catch (err) {
-    // 5. 處理網路或伺服器噴錯 (例如 404, 500)
-    return { success: false, error: err.message };
+    return {success: true, data};
+  } catch (error) {
+    return {success: false, error: error.message};
   }
 }
 
@@ -77,20 +66,10 @@ async function removeProduct(cartId) {
   // 提示：呼叫 deleteCartItem()
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
   try {
-    // 呼叫 API 刪除商品
     const data = await deleteCartItem(cartId);
-
-    // 檢查 API 的業務邏輯回傳（例如該品項已被刪除或權限不足）
-    if (!data.status) {
-      return { success: false, error: data.message || '刪除失敗' };
-    }
-
-    // 成功回傳
-    return { success: true, data };
-
+    return {success: true, data};
   } catch (error) {
-    // 捕捉網路或伺服器錯誤（例如 500 Error）
-    return { success: false, error: error.message };
+    return {success: false, error: error.message};
   }
 }
 

@@ -114,7 +114,6 @@ function formatOrder(order) {
     createdAt: formatDate(createdAt),
     daysAgo: getDaysAgo(createdAt)   
   };
-
 }
 
 /**
@@ -156,24 +155,23 @@ function displayOrders(orders) {
 
     console.log(`訂單 ${index + 1}`);
     console.log("----------------------------------------");
-    console.log(`訂單編號：${formatted.id}`);
-    console.log(`顧客姓名：${formatted.user.name}`);
-    console.log(`聯絡電話：${formatted.user.tel}`);
-    console.log(`寄送地址：${formatted.user.address}`);
-    console.log(`付款方式：${formatted.user.payment}`);
-    console.log(`訂單金額：${formatted.totalFormatted}`);
-    console.log(`付款狀態：${formatted.paidText}`);
-    console.log(`建立時間：${formatted.createdAt} (${formatted.daysAgo})`);
+
+    const {id, user: {name}, tel, address, user: {payment}, totalFormatted, paidText, createdAt, daysAgo} = formatted;
+    console.log(`訂單編號：${id}`);
+    console.log(`顧客姓名：${name}`);
+    console.log(`聯絡電話：${tel}`);
+    console.log(`寄送地址：${address}`);
+    console.log(`付款方式：${payment}`);
+    console.log(`訂單金額：${totalFormatted}`);
+    console.log(`付款狀態：${paidText}`);
+    console.log(`建立時間：${createdAt} (${daysAgo})`);
     console.log("----------------------------------------");
     
-    // 3. 顯示商品明細
     console.log("商品明細：");
-    formatted.products.forEach(item => {
-      // 這裡使用了深層解構賦值拿到產品名稱與數量
-      const { product: { title }, qty } = item;
-      console.log(`  - ${title} x ${qty}`);
-    });
-    
+    formatted.products.forEach(product => {
+      const {title, quantity} = product;
+      console.log(`  - ${title} x ${qty}（產品數量）`);
+    }); 
     console.log("========================================");
   });
 }
