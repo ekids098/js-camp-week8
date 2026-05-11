@@ -18,9 +18,12 @@ async function placeOrder(userInfo) {
   const v = validateOrderUser(userInfo);
   if (!v.isValid) return {success: false, errors: v.errors};
 
-  const data = await createOrder(userInfo);
-  if (!data.status) return {success: false, error: data.message};
-  return {success: true, data};
+  try {
+    const data = await createOrder(userInfo);
+    return {success: true, data};
+  } catch (error) {
+    return {success: false, errors: error.message};
+  }
 }
 
 /**
@@ -65,9 +68,12 @@ async function updatePaymentStatus(orderId, isPaid) {
   // 請實作此函式
   // 提示：呼叫 updateOrderStatus()
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
-  const data = await updateOrderStatus(orderId, isPaid);
-  if (!data.status) return {success: false, error: data.message};
-  return {success: true, data};
+  try {
+    const data = await updateOrderStatus(orderId, isPaid);
+    return {success: true, data};
+  } catch (error) {
+    return {success: false, error: error.message};
+  }
 }
 
 /**
@@ -79,9 +85,12 @@ async function removeOrder(orderId) {
   // 請實作此函式
   // 提示：呼叫 deleteOrder()
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
-  const data = await deleteOrder(orderId);
-  if (!data.status) return {success: false, error: data.message};
-  return {success: true, data};
+  try {
+    const data = await deleteOrder(orderId);
+    return {success: true, data};
+  } catch (error) {
+    return {success: false, error: error.message};
+  }
 }
 
 /**
@@ -102,7 +111,7 @@ async function removeOrder(orderId) {
  */
 function formatOrder(order) {
   // 請實作此函式
-  const {id = '', user = {}, products = [], total = 0, paid = false, createdAt = Date.now()} = order;
+  const {id, user, products, total, paid, createdAt} = order;
   return {
     id,
     user, 
@@ -151,12 +160,11 @@ function displayOrders(orders) {
   console.log("========================================");
 
   orders.forEach((order, index) => {
-    const formatted = formatOrder(order);
-
     console.log(`訂單 ${index + 1}`);
     console.log("----------------------------------------");
 
-    const {id, user: {name}, tel, address, user: {payment}, totalFormatted, paidText, createdAt, daysAgo} = formatted;
+    const formattedOrder = formatOrder(order);
+    const {id, user: {name}, user: {tel}, user: {address}, user: {payment}, totalFormatted, paidText, createdAt, daysAgo} = formattedOrder;
     console.log(`訂單編號：${id}`);
     console.log(`顧客姓名：${name}`);
     console.log(`聯絡電話：${tel}`);
@@ -168,9 +176,9 @@ function displayOrders(orders) {
     console.log("----------------------------------------");
     
     console.log("商品明細：");
-    formatted.products.forEach(product => {
+    formattedOrder.products.forEach(product => {
       const {title, quantity} = product;
-      console.log(`  - ${title} x ${qty}（產品數量）`);
+      console.log(`  - ${title} x ${quantity}（產品數量）`);
     }); 
     console.log("========================================");
   });

@@ -51,9 +51,12 @@ async function updateProduct(cartId, quantity) {
   const v = validateCartQuantity(quantity);
   if (!v.isValid) return {success: false, error: v.error};
 
-  const data = await updateCartItem(cartId, quantity);
-  if (!data.status) return {success: false, error: data.message};
-  return {success: true, data};
+  try {
+    const data = await updateCartItem(cartId, quantity);
+    return {success: true, data};
+  } catch (error) {
+    return {success: false, error: error.message};
+  }
 }
 
 /**
@@ -121,24 +124,25 @@ function displayCart(cart) {
   console.log("購物車內容：");
   console.log("----------------------------------------");
 
-  if (!cart.carts || cart.length === 0) {
+  if (!cart.carts || cart.carts.length === 0) {
     console.log('購物車是空的');
     return;
   }
 
   cart.carts.forEach((item, index) => {
-    const {product: {title}, qty, total, final_total} = item;
-    const formattedTotal = formatCurrency(total);
-    const formattedFinaltotal = formatCurrency(final_total);
+    const {product: {title}, quantity, product: {origin_price}} = item;
+    const formattedPrice = formatCurrency(origin_price);
+    const formattedFinalPrice = formatCurrency(origin_price * quantity);
 
     console.log(`${index + 1}. ${title}`);
-    console.log(`   數量：${qty}`);
-    console.log(`   單價：${formattedTotal}`);
-    console.log(`   小計：${formattedFinaltotal}`);
+    console.log(`   數量：${quantity}`);
+    console.log(`   單價：${formattedPrice}`);
+    console.log(`   小計：${formattedFinalPrice}`);
     console.log("----------------------------------------");
   });
-  console.log(`商品總計：${cart.total}`);
-  console.log(`折扣後金額：${cart.finalTotal}`);
+
+  console.log(`商品總計：${formatCurrency(cart.total)}`);
+  console.log(`折扣後金額：${formatCurrency(cart.finalTotal)}`);
 }
 
 module.exports = {
